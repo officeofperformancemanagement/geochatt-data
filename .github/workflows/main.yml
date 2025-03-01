@@ -1,0 +1,29 @@
+name: build-main
+run-name: build-main
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    # every day
+    - cron: 0 0 * * *
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    name: download and save data
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+
+      - run: pip install -r requirements.txt
+
+      - run: python prepare_parcels_geojson.py
+      
+      - run: git config --global --add safe.directory $(realpath .)
+
+      # Commit all changed files back to the repository
+      - uses: stefanzweifel/git-auto-commit-action@v4
